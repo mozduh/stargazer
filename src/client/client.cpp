@@ -223,7 +223,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				object.second.vPos = vPotentialPosition;
 				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
 
-				olc::vi2d pos = {0, 0};
+				olc::vi2d pos = player->getSpritePos(object.second.vVel);
 				olc::vi2d size = {40, 40};
 				DrawPartialDecal(vWorld, player->decal, pos, size);
 

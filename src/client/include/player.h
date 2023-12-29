@@ -12,12 +12,17 @@ namespace SG
                 olc::Sprite *spriteSheet;
                 olc::Decal *decal;
 
+                olc::vi2d currentSpritPos;
+                olc::vi2d size;
 
                 // used to draw out from sprite sheet with 4 corners
                 int32_t ox;
                 int32_t oy;
                 int32_t w;
                 int32_t h;
+
+            public:
+                olc::vi2d getSpritePos(olc::vf2d vel);
         };
     }
 }
