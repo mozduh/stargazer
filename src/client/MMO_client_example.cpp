@@ -1,7 +1,7 @@
-#include "../MMO_Server/MMO_Common.h"
+#include "../../shared/common.h"
 
 #define OLC_PGEX_TRANSFORMEDVIEW
-#include "olcPGEX_TransformedView.h"
+#include "../../shared/olcPGEX_TransformedView.h"
 
 #include <unordered_map>
 

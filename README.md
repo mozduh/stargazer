@@ -18,7 +18,10 @@ The result of running make should output two binaries in the debug folder:
 - server
 - client
 
-you can run these programs in the terminal. Be sure to run the server first and run as many clients as you want.
+cd to the debug directory. Be sure to run the server first then the client.
+
+# Examples
+Run `make examples` to compile some examples programs that show isometric concept and MMO client concept. These examples will compile into the debug directory.
 
 # Contribution
 To Contribute, please see issues. Create pull requests with potential fixes.
