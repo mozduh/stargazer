@@ -90,15 +90,13 @@ public:
 			{
 				olc::vi2d vWorld = ToScreen(x, y);
 				SG::world::SGTile tile = *tiles[map->pWorld[(y * (map->mapSize_x)) + x]];
+				olc::vi2d pos = {tile.ox, tile.oy};
+				olc::vi2d size = {tile.w, tile.h};
 				if (tile.h == tile.tileSize_y * 2) 
 				{
-					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, map->spriteSheet, tile.ox, tile.oy, tile.w, tile.h);
+					vWorld.y -= vTileSize.y;
 				}
-				else 
-				{
-					DrawPartialSprite(vWorld.x, vWorld.y, map->spriteSheet, tile.ox, tile.oy, tile.w, tile.h);
-				}
-				//DrawPartialDecal(vWorld, map->decal, {tile.ox, tile.oy}, {tile.w, tile.h});
+				DrawPartialDecal(vWorld, map->decal, pos, size);
 			}
 		}
 
