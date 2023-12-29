@@ -1,4 +1,4 @@
-#include "../../shared/olcPixelGameEngine.h"
+#include "../../../shared/olcPixelGameEngine.h"
 
 namespace SG 
 {
@@ -13,12 +13,12 @@ namespace SG
                     sprIsom = new olc::Sprite("assets/isometric_demo.png");
 
                     // Create empty world
-                    pWorld = new int[vWorldSize.x * vWorldSize.y]{ 0 };
+                    pWorld = new int[vMapSize.x * vMapSize.y]{ 0 };
                 }
             
             private:
-               // Number of tiles in world
-                olc::vi2d vWorldSize = { 14, 10 };
+               // Number of tiles in map
+                olc::vi2d vMapSize = { 14, 10 };
 
                 // Size of single tile graphic
                 olc::vi2d vTileSize = { 40, 20 };
@@ -57,7 +57,7 @@ namespace SG
             public:
                 void drawTile()
                 {
-                    
+
                 }
             
         };
