@@ -1,5 +1,5 @@
 #define OLC_PGE_APPLICATION
-#include "../src/shared/olcPixelGameEngine.h"
+#include "../../src/shared/olcPixelGameEngine.h"
 
 // Override base class with your custom functionality
 class IsometricDemo : public olc::PixelGameEngine

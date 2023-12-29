@@ -12,7 +12,7 @@ DEBUG_DIR = ./debug
 CLIENT_TARGETS = $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o
 SERVER_TARGETS = 
 
-EXAMPLE_DIR = ./inspiration
+EXAMPLE_DIR = ./docs/inspiration
 
 all: client server
 
