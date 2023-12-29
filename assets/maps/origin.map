@@ -1,4 +1,7 @@
-origin_map
+map
 {
-    
+    name = "origin"
+    mapSize_x = 40
+    mapSize_y = 20
+    tiles = grass, sand, tree
 }

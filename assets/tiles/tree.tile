@@ -1,0 +1,9 @@
+tile
+{
+    isBoundary = 1
+    isInteractive = 1
+    sheet_ox = 2
+    sheet_oy = 0
+    sheet_wm = 1
+    sheet_hm = 2
+}

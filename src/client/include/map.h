@@ -11,13 +11,15 @@ namespace SG
             
             public:
                // Number of tiles in map
-                olc::vi2d vMapSize;
+                int mapSize_x;
+                int mapSize_y;
                 
                 // Sprite that holds all sprites that pertain to the map
+                std::string spriteSheetName;
                 olc::Sprite *spriteSheet;
 
-                // Pointer to create 2D world array
-                int *pWorld;  
+                // Pointer to create 2D world array thats based in world coordinates
+                int pWorld[0][0];
         };
     }
 }

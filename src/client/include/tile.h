@@ -9,9 +9,6 @@ namespace SG
                 SGTile(std::string tileName);
 
             public:
-                // tile size
-                olc::vi2d vTileSize;
-
                 // bool flags
                 bool isBoundary = false;
                 bool isInteractive = false;
