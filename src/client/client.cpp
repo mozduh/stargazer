@@ -1,13 +1,9 @@
-#define OLC_PGE_APPLICATION
-#include "../shared/olcPixelGameEngine.h"
 #include "../shared/common.h"
 #include "./include/map.h"
 #include "./include/tile.h"
-#include <typeinfo>
-#include <list>
-
+#include <unordered_map>
 // Override base class with your custom functionality
-class StarGazerGame : public olc::PixelGameEngine
+class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
 {
 	public:
 		StarGazerGame()
@@ -65,12 +61,87 @@ class StarGazerGame : public olc::PixelGameEngine
 				tiles[i] = new SG::world::SGTile(map->tiles[i]);
 			}
 
-			return true;
+			// Network Connect
+			if (Connect("127.0.0.1", 60000))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		bool OnUserUpdate(float fElapsedTime) override
 		{
+			// Check for incoming network messages
+			if (IsConnected())
+			{
+				while (!Incoming().empty())
+				{
+					auto msg = Incoming().pop_front().msg;
 
+					switch (msg.header.id)
+					{
+					case(GameMsg::Client_Accepted):
+					{
+						std::cout << "Server accepted client - you're in!\n";
+						olc::net::message<GameMsg> msg;
+						msg.header.id = GameMsg::Client_RegisterWithServer;
+						descPlayer.vPos = { 3, 3 };
+						msg << descPlayer;
+						Send(msg);
+						break;
+					}
+
+					case(GameMsg::Client_AssignID):
+					{
+						// Server is assigning us OUR id
+						msg >> nPlayerID;
+						std::cout << "Assigned Client ID = " << nPlayerID << "\n";
+						break;
+					}
+
+					case(GameMsg::Game_AddPlayer):
+					{
+						sPlayerDescription desc;
+						msg >> desc;
+						mapObjects.insert_or_assign(desc.nUniqueID, desc);
+
+						if (desc.nUniqueID == nPlayerID)
+						{
+							// Now we exist in game world
+							bWaitingForConnection = false;
+						}
+						break;
+					}
+
+					case(GameMsg::Game_RemovePlayer):
+					{
+						uint32_t nRemovalID = 0;
+						msg >> nRemovalID;
+						mapObjects.erase(nRemovalID);
+						break;
+					}
+
+					case(GameMsg::Game_UpdatePlayer):
+					{
+						sPlayerDescription desc;
+						msg >> desc;
+						mapObjects.insert_or_assign(desc.nUniqueID, desc);
+						break;
+					}
+
+					}
+				}
+			}
+			if (bWaitingForConnection)
+			{
+				Clear(olc::DARK_BLUE);
+				DrawString({ 10,10 }, "Waiting To Connect...", olc::WHITE);
+				return true;
+			}
+
+
+			
 			// Labmda function to convert "world" coordinate into screen space
 			auto ToScreen = [&](int x, int y)
 			{			
@@ -81,17 +152,30 @@ class StarGazerGame : public olc::PixelGameEngine
 				};
 			};
 
+			auto ToScreenFloat = [&](float x, float y)
+			{			
+				return olc::vf2d
+				{
+					(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
+					(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
+				};
+			};
+
 			// User Input
-			if (GetKey(olc::Key::W).bHeld) viewOffset += { 0, +1 };
-			if (GetKey(olc::Key::S).bHeld) viewOffset += { 0, -1 };
-			if (GetKey(olc::Key::A).bHeld) viewOffset += { +1, 0 };
-			if (GetKey(olc::Key::D).bHeld) viewOffset += { -1, 0 };
+			// if (GetKey(olc::Key::W).bHeld) viewOffset += { 0, +1 };
+			// if (GetKey(olc::Key::S).bHeld) viewOffset += { 0, -1 };
+			// if (GetKey(olc::Key::A).bHeld) viewOffset += { +1, 0 };
+			// if (GetKey(olc::Key::D).bHeld) viewOffset += { -1, 0 };
+
+			mapObjects[nPlayerID].vVel = { 0.0f, 0.0f };
+			if (GetKey(olc::Key::W).bHeld) mapObjects[nPlayerID].vVel += { -2, -2 };
+			if (GetKey(olc::Key::S).bHeld) mapObjects[nPlayerID].vVel += { +2, +2 };
+			if (GetKey(olc::Key::A).bHeld) mapObjects[nPlayerID].vVel += { -2, +2 };
+			if (GetKey(olc::Key::D).bHeld) mapObjects[nPlayerID].vVel += { +2, -2 };
+
 
 			// Render Layer 0 - DEBUG
 			Clear(olc::BLANK);
-
-			SetPixelMode(olc::Pixel::MASK);
-
 
 			// Render Layer 1 - World
 			SetDrawTarget(worldLayer);
@@ -113,27 +197,47 @@ class StarGazerGame : public olc::PixelGameEngine
 			}
 
 			EnableLayer(worldLayer, true);
-
-			// Render Layer 2 - GameObjects
-			SetDrawTarget(gameObjLayer);
-			// GAME OBJECT DRAWING CRITICAL SECTION
-
-			EnableLayer(gameObjLayer, true);
-
-			// Render Layer 3 - Players
-			SetDrawTarget(playerObjLayer);
-			// PLAYER DRAWING CRITICAL SECTION
-
-			EnableLayer(playerObjLayer, true);
-
-			// Render Layer 3 - Interfaces
-			SetDrawTarget(interfaceLayer);
-			// INTERFACE DRAWING CRITICAL SECTION
-
-			EnableLayer(interfaceLayer, true);
-
-			SetPixelMode(olc::Pixel::NORMAL);
 			SetDrawTarget(nullptr);
+
+
+			// // Render Layer 2 - GameObjects
+			// SetDrawTarget(gameObjLayer);
+			// // GAME OBJECT DRAWING CRITICAL SECTION
+			// Clear(olc::BLANK);
+			// EnableLayer(gameObjLayer, true);
+
+			// // Render Layer 3 - Players
+			// SetDrawTarget(playerObjLayer);
+			// PLAYER DRAWING CRITICAL SECTION
+			// Update objects locally
+			for (auto& object : mapObjects)
+			{
+				// Where will object be worst case?
+				olc::vf2d vPotentialPosition = object.second.vPos + object.second.vVel * fElapsedTime;
+				object.second.vPos = vPotentialPosition;
+				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
+				DrawCircle(vWorld, 10.0);
+				DrawString(4, 4, "player (id)   : " + std::to_string(object.second.vPos.x) + ", " + std::to_string(object.second.vPos.y), olc::WHITE);
+				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
+			}
+			// EnableLayer(playerObjLayer, true);
+
+			// // Render Layer 3 - Interfaces
+			// SetDrawTarget(interfaceLayer);
+			// // INTERFACE DRAWING CRITICAL SECTION
+
+			// EnableLayer(interfaceLayer, true);
+			
+
+			SetDrawTarget(nullptr);
+
+			// Send player description
+			olc::net::message<GameMsg> msg;
+			msg.header.id = GameMsg::Game_UpdatePlayer;
+			msg << mapObjects[nPlayerID];
+			Send(msg);
+
+			DrawString(4, 24, "player (id)   : " + std::to_string(mapObjects[nPlayerID].vPos.x) + ", " + std::to_string(mapObjects[nPlayerID].vPos.y), olc::WHITE);
 			return true;
 		}
 };
