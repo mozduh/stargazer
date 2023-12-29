@@ -13,10 +13,10 @@ SG::world::SGTile::SGTile(std::string tileName)
     {
         isBoundary = tileFile["tile"]["isBoundary"].GetInt();
         isInteractive = tileFile["tile"]["isInteractive"].GetInt();
-        ox = tileFile["tile"]["sheet_ox"].GetInt();
-        oy = tileFile["tile"]["sheet_oy"].GetInt();
-        w = tileFile["tile"]["sheet_wm"].GetInt();
-        h = tileFile["tile"]["sheet_hm"].GetInt();
+        ox = tileFile["tile"]["sheet_ox"].GetInt() * tileSize_x;
+        oy = tileFile["tile"]["sheet_oy"].GetInt() * tileSize_y;
+        w = tileFile["tile"]["sheet_wm"].GetInt() * tileSize_x;
+        h = tileFile["tile"]["sheet_hm"].GetInt() * tileSize_y;
     }
     else
     {

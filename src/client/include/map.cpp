@@ -9,6 +9,7 @@ SG::world::SGMap::SGMap(std::string mapName)
     // load sprites for map
     std::string spritePath = "../assets/sprites/" + mapName + ".png";
     spriteSheet = new olc::Sprite(spritePath);
+    decal = new olc::Decal(spriteSheet);
 
     olc::utils::datafile mapFile;
     std::string dataFilePath = "../assets/maps/" + mapName + ".map";

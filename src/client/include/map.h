@@ -16,6 +16,7 @@ namespace SG
                 
                 // Sprite that holds all sprites that pertain to the map
                 olc::Sprite *spriteSheet;
+                olc::Decal *decal;
 
                 // Tiles used
                 std::string *tiles;

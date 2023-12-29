@@ -11,6 +11,8 @@ namespace SG
                 // bool flags
                 bool isBoundary = false;
                 bool isInteractive = false;
+                int tileSize_x = 40;
+                int tileSize_y = 20;
 
                 // used to draw out from sprite sheet with 4 corners
                 int32_t ox;

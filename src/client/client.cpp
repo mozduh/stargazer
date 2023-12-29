@@ -89,8 +89,16 @@ public:
 			for (int x = 0; x < map->mapSize_x; x++)
 			{
 				olc::vi2d vWorld = ToScreen(x, y);
-				int iTile = map->pWorld[(y * (map->mapSize_x)) + x];
-				DrawPartialSprite(vWorld.x, vWorld.y, map->spriteSheet, tiles[iTile]->ox * vTileSize.x, tiles[iTile]->oy * vTileSize.y, tiles[iTile]->w * vTileSize.x, vTileSize.y * tiles[iTile]->h);
+				SG::world::SGTile tile = *tiles[map->pWorld[(y * (map->mapSize_x)) + x]];
+				if (tile.h == tile.tileSize_y * 2) 
+				{
+					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, map->spriteSheet, tile.ox, tile.oy, tile.w, tile.h);
+				}
+				else 
+				{
+					DrawPartialSprite(vWorld.x, vWorld.y, map->spriteSheet, tile.ox, tile.oy, tile.w, tile.h);
+				}
+				//DrawPartialDecal(vWorld, map->decal, {tile.ox, tile.oy}, {tile.w, tile.h});
 			}
 		}
 
@@ -124,6 +132,7 @@ public:
 int main()
 {
 	StarGazerGame demo;
+
 	if (demo.Construct(512, 480, 2, 2))
 		demo.Start();
 	return 0;

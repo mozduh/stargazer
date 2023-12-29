@@ -2,8 +2,8 @@ tile
 {
     isBoundary = 1
     isInteractive = 1
-    sheet_ox = 1
-    sheet_oy = 0
+    sheet_ox = 0
+    sheet_oy = 1
     sheet_wm = 1
     sheet_hm = 2
 }
