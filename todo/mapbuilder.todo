@@ -1,8 +1,0 @@
-TODO
-----
-
-The way maps are represented, are by using int to reference a particular tile.
-
-It may be interessting to create a utility program to create maps.
-
-Which can give use the ability to save a .map file straight from the map builder util program.
