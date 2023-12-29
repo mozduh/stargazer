@@ -1,5 +1,6 @@
 CC = g++
 CFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+RM = rm
 
 SHARED_DIR =./shared
 CLIENT_SRC = ./src/client
@@ -27,8 +28,15 @@ map.o:
 tile.o:
 	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/tile.o -c $(CLIENT_SRC)/include/tile.cpp
 
+clean:
+	$(RM) $(CLIENT_TARGETS) $(SERVER_TARGETS)
+	$(RM) $(DEBUG_DIR)/client $(DEBUG_DIR)/server
+
 # EXAMPLE TARGETS... WILL BE LEAVING SOON
 examples: exampleMMOClient exampleIsoClient exampleServer
+
+cleanExamples:
+	$(RM) $(EXAMPLE_DIR)/mmoEXClient ${EXAMPLE_DIR}/server ${EXAMPLE_DIR}/isoEXClient
 
 exampleMMOClient:
 	$(CC) $(CFLAGS) -o ${EXAMPLE_DIR}/mmoEXClient ${EXAMPLE_DIR}/MMO_client_example.cpp 

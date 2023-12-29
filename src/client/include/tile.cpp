@@ -1,5 +1,5 @@
-#include "../../../shared/olcPixelGameEngine.h"
-#include "../../../shared/olcUTIL_DataFile.h"
+#include "../../shared/olcPixelGameEngine.h"
+#include "../../shared/olcUTIL_DataFile.h"
 #include "tile.h"
 #include <string>
 

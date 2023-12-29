@@ -1,8 +1,8 @@
 #define OLC_PGE_APPLICATION
-#include "../shared/olcPixelGameEngine.h"
+#include "../src/shared/olcPixelGameEngine.h"
 
 #define OLC_PGEX_NETWORK
-#include "../shared/olcPGEX_Network.h"
+#include "../src/shared/olcPGEX_Network.h"
 
 enum class GameMsg : uint32_t
 {

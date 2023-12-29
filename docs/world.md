@@ -17,3 +17,7 @@ example tiles:
 - sane tile
 
 # Map File format
+.map files will describe a map to it's full extent and will be loaded using the DataFile Utility .h file.
+
+# Tile File format
+.tile files will describe a tile to it's full extent and will be loaded using the DataFile Utility .h file.

@@ -12,3 +12,6 @@ The Inspiration around building Star Gazer is to experient and learn C++ while u
 
 # Run Isometric Example
 `./isoEXClient`
+
+# Clean up
+`make cleanExamples`

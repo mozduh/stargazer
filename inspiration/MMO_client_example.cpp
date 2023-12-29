@@ -1,7 +1,7 @@
 #include "./common.h"
 
 #define OLC_PGEX_TRANSFORMEDVIEW
-#include "../shared/olcPGEX_TransformedView.h"
+#include "../src/shared/olcPGEX_TransformedView.h"
 
 #include <unordered_map>
 

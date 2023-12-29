@@ -1,5 +1,5 @@
 #define OLC_PGE_APPLICATION
-#include "../../shared/olcPixelGameEngine.h"
+#include "../shared/olcPixelGameEngine.h"
 #include "./include/map.h"
 #include "./include/tile.h"
 

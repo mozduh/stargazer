@@ -21,7 +21,13 @@ The result of running make should output two binaries in the debug folder:
 cd to the debug directory. Be sure to run the server first then the client.
 
 # Examples
-Run `make examples` to compile some examples programs that show isometric concept and MMO client concept. These examples will compile into the debug directory.
+Check out the Inspiration directory README file for information about the inspiration of this project and instructions to run example programs.
 
 # Contribution
-To Contribute, please see issues. Create pull requests with potential fixes.
+To Contribute:
+- check out the `todo` directory
+- look for a todo file that you want to solve
+- create a branch
+- write code that solves the todo ticket
+- once complete, remove the todo file from the directory, commit, and push to remote
+- create a pull request to be reviewed

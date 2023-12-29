@@ -1,7 +1,7 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "../../shared/common.h"
+#include "../shared/common.h"
 
 class GameServer : public olc::net::server_interface<GameMsg>
 {

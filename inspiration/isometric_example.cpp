@@ -1,5 +1,5 @@
 #define OLC_PGE_APPLICATION
-#include "../shared/olcPixelGameEngine.h"
+#include "../src/shared/olcPixelGameEngine.h"
 
 // Override base class with your custom functionality
 class IsometricDemo : public olc::PixelGameEngine
@@ -30,7 +30,7 @@ public:
 	bool OnUserCreate() override
 	{
 		// Load sprites used in demonstration
-		sprIsom = new olc::Sprite("../assets/isometric_demo.png");
+		sprIsom = new olc::Sprite("isometric_demo.png");
 
 		// Create empty world
 		pWorld = new int[vWorldSize.x * vWorldSize.y]{ 0 };
