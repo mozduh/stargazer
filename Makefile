@@ -2,14 +2,16 @@ CC = g++
 CFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
 
 SHARED_DIR =./shared
-CLIENT_SRC=./src/client
-CLIENT_BUILD=./src/client/build
-SERVER_SRC=./src/server
-SERVER_BUILD=./src/server/build
-DEBUG_DIR=./debug
+CLIENT_SRC = ./src/client
+CLIENT_BUILD = ./src/client/build
+SERVER_SRC = ./src/server
+SERVER_BUILD = ./src/server/build
+DEBUG_DIR = ./debug
 
 CLIENT_TARGETS = client.o map.o olcPixelGameEngine.o
 SERVER_TARGETS = server.o olcPGEX_Network.o
+
+EXAMPLE_DIR = ./inspiration
 
 all: client server
 
@@ -26,10 +28,13 @@ $(CLIENT_BUILD)/tile.o:
 	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/tile.o -c $(CLIENT_SRC)/include/tile.cpp
 
 # EXAMPLE TARGETS... WILL BE LEAVING SOON
-examples: exampleMMOClient exampleIsoClient
+examples: exampleMMOClient exampleIsoClient exampleServer
 
 exampleMMOClient:
-	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/mmoEXClient ${CLIENT_SRC}/MMO_client_example.cpp 
+	$(CC) $(CFLAGS) -o ${EXAMPLE_DIR}/mmoEXClient ${EXAMPLE_DIR}/MMO_client_example.cpp 
 
 exampleIsoClient:
-	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/isoEXClient ${CLIENT_SRC}/isometric_example.cpp 
+	$(CC) $(CFLAGS) -o ${EXAMPLE_DIR}/isoEXClient ${EXAMPLE_DIR}/isometric_example.cpp 
+
+exampleServer:
+	$(CC) $(CFLAGS) -o ${EXAMPLE_DIR}/server ${EXAMPLE_DIR}/server.cpp

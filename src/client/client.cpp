@@ -50,7 +50,15 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		// Render Layer 0 - DEBUG
 		Clear(olc::WHITE);
+
+		// Render Layer 1 - World
+
+		// Render Layer 2 - GameObjects
+
+		// Render Layer 3 - Interfaces
+
 
 		return true;
 	}

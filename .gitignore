@@ -3,3 +3,6 @@ debug/server
 debug/isoEXClient
 debug/mmoEXClient
 *.o
+inspiration/mmoEXClient
+inspiration/isoEXClient
+inspiration/server

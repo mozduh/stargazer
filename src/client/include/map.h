@@ -1,4 +1,3 @@
-#include "../../../shared/olcPixelGameEngine.h"
 
 namespace SG 
 {
