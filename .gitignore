@@ -1,5 +1,5 @@
-debug/sg_client
-debug/sg_server
+debug/client
+debug/server
 debug/isoEXClient
 debug/mmoEXClient
 *.o

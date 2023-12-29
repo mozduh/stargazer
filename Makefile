@@ -1,24 +1,32 @@
+CC = g++
+CFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
 
+SHARED_DIR =./shared
 CLIENT_SRC=./src/client
 CLIENT_BUILD=./src/client/build
 SERVER_SRC=./src/server
+SERVER_BUILD=./src/server/build
 DEBUG_DIR=./debug
 
-main: client server
+CLIENT_TARGETS = client.o map.o olcPixelGameEngine.o
+SERVER_TARGETS = server.o olcPGEX_Network.o
 
-examples: exampleMMOClient exampleIsoClient
+all: client server
 
-client: map
-	g++ -o ${DEBUG_DIR}/sg_client ${CLIENT_SRC}/client.cpp $(CLIENT_BUILD)/map.o -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+client: ${CLIENT_BUILD}/map.o
+	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/client ${CLIENT_SRC}/client.cpp $(CLIENT_BUILD)/map.o
 
 server:
-	g++ -o ${DEBUG_DIR}/sg_server ${SERVER_SRC}/server.cpp -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/server ${SERVER_SRC}/server.cpp
 
-map: 
-	g++ -o ${CLIENT_BUILD}/map.o -c ${CLIENT_SRC}/include/map.cpp -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+map.o: 
+	$(CC) $(CFLAGS) -o ${CLIENT_BUILD}/map.o -c ${CLIENT_SRC}/include/map.cpp 
+
+# EXAMPLE TARGETS... WILL BE LEAVING SOON
+examples: exampleMMOClient exampleIsoClient
 
 exampleMMOClient:
-	g++ -o ${DEBUG_DIR}/mmoEXClient ${CLIENT_SRC}/MMO_client_example.cpp -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/mmoEXClient ${CLIENT_SRC}/MMO_client_example.cpp 
 
 exampleIsoClient:
-	g++ -o ${DEBUG_DIR}/isoEXClient ${CLIENT_SRC}/isometric_example.cpp -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/isoEXClient ${CLIENT_SRC}/isometric_example.cpp 
