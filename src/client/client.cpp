@@ -1,6 +1,7 @@
 #include "../shared/common.h"
 #include "./include/map.h"
 #include "./include/tile.h"
+#include "./include/player.h"
 #include <unordered_map>
 // Override base class with your custom functionality
 class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
@@ -33,6 +34,9 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 
 		olc::vi2d viewOffset = { 0, 0 };
 
+		// player
+		SG::world::Player *player;
+
 	private:
 		std::unordered_map<uint32_t, sPlayerDescription> mapObjects;
 		uint32_t nPlayerID = 0;
@@ -53,6 +57,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// TODO -> this information should come from the server
 			std::string mapName = "origin";
 			map = new SG::world::SGMap(mapName);
+			player = new SG::world::Player();
 
 			// initalize tiles used in map
 			tiles = new SG::world::SGTile*[map->tileCount];
@@ -64,6 +69,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// Network Connect
 			if (Connect("127.0.0.1", 60000))
 			{
+				
 				return true;
 			}
 
@@ -216,7 +222,11 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				olc::vf2d vPotentialPosition = object.second.vPos + object.second.vVel * fElapsedTime;
 				object.second.vPos = vPotentialPosition;
 				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
-				DrawCircle(vWorld, 10.0);
+
+				olc::vi2d pos = {0, 0};
+				olc::vi2d size = {40, 40};
+				DrawPartialDecal(vWorld, player->decal, pos, size);
+
 				DrawString(4, 4, "player (id)   : " + std::to_string(object.second.vPos.x) + ", " + std::to_string(object.second.vPos.y), olc::WHITE);
 				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
 			}
