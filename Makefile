@@ -13,14 +13,17 @@ SERVER_TARGETS = server.o olcPGEX_Network.o
 
 all: client server
 
-client: ${CLIENT_BUILD}/map.o
-	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/client ${CLIENT_SRC}/client.cpp $(CLIENT_BUILD)/map.o
+client: ${CLIENT_BUILD}/map.o $(CLIENT_BUILD)/tile.o
+	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/client ${CLIENT_SRC}/client.cpp $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o
 
 server:
 	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/server ${SERVER_SRC}/server.cpp
 
 $(CLIENT_BUILD)/map.o: 
 	$(CC) $(CFLAGS) -o ${CLIENT_BUILD}/map.o -c ${CLIENT_SRC}/include/map.cpp 
+
+$(CLIENT_BUILD)/tile.o:
+	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/tile.o -c $(CLIENT_SRC)/include/tile.cpp
 
 # EXAMPLE TARGETS... WILL BE LEAVING SOON
 examples: exampleMMOClient exampleIsoClient
