@@ -13,6 +13,16 @@ public:
 	}
 
 private:
+
+	// World Layer
+	int worldLayer;
+	// Game Objects Layer
+	int gameObjLayer;
+	// Player Object Layer
+	int playerObjLayer;
+	// Interface Layer
+	int interfaceLayer;
+
 	// Number of tiles in world
 	olc::vi2d vWorldSize = { 14, 10 };
 
@@ -40,6 +50,13 @@ private:
 public:
 	bool OnUserCreate() override
 	{
+		// Create Layers
+		worldLayer = CreateLayer();
+		gameObjLayer = CreateLayer();
+		playerObjLayer = CreateLayer();
+		interfaceLayer = CreateLayer();
+
+
 		// Load sprites used in demonstration
 		sprIsom = new olc::Sprite("../assets/isometric_demo.png");
 
@@ -51,15 +68,30 @@ public:
 	bool OnUserUpdate(float fElapsedTime) override
 	{
 		// Render Layer 0 - DEBUG
-		Clear(olc::WHITE);
+		Clear(olc::BLANK);
 
 		// Render Layer 1 - World
+		SetDrawTarget(worldLayer);
+
+		EnableLayer(worldLayer, true);
 
 		// Render Layer 2 - GameObjects
+		SetDrawTarget(gameObjLayer);
+
+		EnableLayer(gameObjLayer, true);
+
+		// Render Layer 3 - Players
+		SetDrawTarget(playerObjLayer);
+
+		EnableLayer(playerObjLayer, true);
 
 		// Render Layer 3 - Interfaces
+		SetDrawTarget(interfaceLayer);
+
+		EnableLayer(interfaceLayer, true);
 
 
+		SetDrawTarget(nullptr);
 		return true;
 	}
 };
