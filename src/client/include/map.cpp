@@ -7,8 +7,8 @@
 SG::world::SGMap::SGMap(std::string mapName) 
 {
     // load sprites for map
-    std::string spritePath = "../assets/sprites/" + mapName + ".map.png";
-    spriteSheet = new olc::Sprite("isometric_demo.png");
+    std::string spritePath = "../assets/sprites/" + mapName + ".png";
+    spriteSheet = new olc::Sprite(spritePath);
 
     olc::utils::datafile mapFile;
     std::string dataFilePath = "../assets/maps/" + mapName + ".map";
@@ -22,17 +22,17 @@ SG::world::SGMap::SGMap(std::string mapName)
         mapSize_y = mapFile["map"]["mapSize_y"].GetInt();
         
         // deserialize tileMap
-        int tileCount = mapFile["map"]["tileMap"].GetValueCount();
-        pWorld = new int[tileCount]{ 0 };
-        for (int i = 0; i < tileCount; i++) 
+        int tileMapCount = mapFile["map"]["tileMap"].GetValueCount();
+        pWorld = new int[mapSize_x * mapSize_y]{ 0 };
+        for (int i = 0; i < tileMapCount; i++) 
         {
             pWorld[i] = mapFile["map"]["tileMap"].GetInt(i);
         }
 
         // get tiles that are used in map
-        int tilesUsedCount = mapFile["map"]["tilesUsed"].GetValueCount();
-        tiles = new std::string[tilesUsedCount] { };
-        for (int i = 0; i < tilesUsedCount; i++)
+        tileCount = mapFile["map"]["tilesUsed"].GetValueCount();
+        tiles = new std::string[tileCount] { };
+        for (int i = 0; i < tileCount; i++)
         {
             tiles[i] = mapFile["map"]["tilesUsed"].GetString(i);
         }

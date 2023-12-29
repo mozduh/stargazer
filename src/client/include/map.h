@@ -19,6 +19,7 @@ namespace SG
 
                 // Tiles used
                 std::string *tiles;
+                int tileCount;
 
                 // Pointer to create 2D world array thats based in world coordinates
                 int *pWorld;
