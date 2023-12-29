@@ -1,14 +1,9 @@
 #include "../../../shared/olcPixelGameEngine.h"
 #include "map.h"
+#include <string>
 
 
-SG::world::SGMap::SGMap(olc::vi2d mapSize) 
+SG::world::SGMap::SGMap(std::string mapName) 
 {
-    vMapSize = mapSize;
-
-    // Load sprites used in demonstration
-    sprIsom = new olc::Sprite("../assets/isometric_demo.png");
-
-    // Create empty world
-    pWorld = new int[vMapSize.x * vMapSize.y]{ 0 };
+    
 }

@@ -1,3 +1,4 @@
+#include <string>
 
 namespace SG 
 {
@@ -6,14 +7,14 @@ namespace SG
         class SGMap
         {
             public:
-                SGMap(olc::vi2d mapSize);
+                SGMap(std::string mapName);
             
             public:
                // Number of tiles in map
                 olc::vi2d vMapSize;
-
-                // Sprite that holds all imagery
-                olc::Sprite *sprIsom;
+                
+                // Sprite that holds all sprites that pertain to the map
+                olc::Sprite *spriteSheet;
 
                 // Pointer to create 2D world array
                 int *pWorld;  

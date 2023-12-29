@@ -11,3 +11,9 @@ The map class will hold data that pertains to the world layer.
 
 # Tile Class
 The tile class will hold data about the idea
+example tiles:
+- grass tile
+- tree tile (boundary tile) (interactive tile, player can cut down tree) (tile will have multiple sprites)
+- sane tile
+
+# Map File format

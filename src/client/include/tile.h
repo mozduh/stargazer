@@ -6,11 +6,15 @@ namespace SG
         class SGTile
         {
             public:
-                SGTile(olc::vi2d tileSize, int32_t mox, int32_t moy, int32_t mh, int32_t mw );
+                SGTile(std::string tileName);
 
             public:
                 // tile size
                 olc::vi2d vTileSize;
+
+                // bool flags
+                bool isBoundary = false;
+                bool isInteractive = false;
 
                 // used to draw out from sprite sheet with 4 corners
                 int32_t ox;
