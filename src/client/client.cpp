@@ -27,6 +27,15 @@ private:
 	// Pointer to create 2D world array
 	int *pWorld = nullptr;
 
+	SG::map::SGMap map = SG::map::SGMap(vWorldSize);
+	SG::map::SGTile selectedTile = SG::map::SGTile(vTileSize, 0, 0, 1, 1);
+	SG::map::SGTile invisbleTile = SG::map::SGTile(vTileSize, 1, 0, 1, 1);
+	SG::map::SGTile grassTile = SG::map::SGTile(vTileSize, 2, 0, 1, 1);
+	SG::map::SGTile sandTile = SG::map::SGTile(vTileSize, 2, 1, 1, 2);
+	SG::map::SGTile widtheredTreeTile = SG::map::SGTile(vTileSize, 1, 1, 1, 2);
+	SG::map::SGTile treeTile = SG::map::SGTile(vTileSize, 0, 1, 1, 2);
+	SG::map::SGTile waterTile = SG::map::SGTile(vTileSize, 3, 1, 1, 2);
+
 public:
 	bool OnUserCreate() override
 	{
@@ -101,27 +110,27 @@ public:
 				{
 				case 0:
 					// Invisble Tile
-					DrawPartialSprite(vWorld.x, vWorld.y, sprIsom, 1 * vTileSize.x, 0, vTileSize.x, vTileSize.y);
+					DrawPartialSprite(vWorld.x, vWorld.y, sprIsom, invisbleTile.ox, invisbleTile.oy, invisbleTile.w, invisbleTile.h);
 					break;
 				case 1:
 					// Visible Tile
-					DrawPartialSprite(vWorld.x, vWorld.y, sprIsom, 2 * vTileSize.x, 0, vTileSize.x, vTileSize.y);
+					DrawPartialSprite(vWorld.x, vWorld.y, sprIsom, grassTile.ox, grassTile.oy, grassTile.w, grassTile.h);
 					break;
 				case 2:
 					// Tree
-					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, 0 * vTileSize.x, 1 * vTileSize.y, vTileSize.x, vTileSize.y * 2);
+					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, treeTile.ox, treeTile.oy, treeTile.w, treeTile.h);
 					break;
 				case 3:
 					// Spooky Tree
-					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, 1 * vTileSize.x, 1 * vTileSize.y, vTileSize.x, vTileSize.y * 2);
+					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, widtheredTreeTile.ox, widtheredTreeTile.oy, widtheredTreeTile.w, widtheredTreeTile.h);
 					break;
 				case 4:
 					// Beach
-					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, 2 * vTileSize.x, 1 * vTileSize.y, vTileSize.x, vTileSize.y * 2);
+					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, sandTile.ox, sandTile.oy, sandTile.w, sandTile.h);
 					break;
 				case 5:
 					// Water
-					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, 3 * vTileSize.x, 1 * vTileSize.y, vTileSize.x, vTileSize.y * 2);
+					DrawPartialSprite(vWorld.x, vWorld.y - vTileSize.y, sprIsom, waterTile.ox, waterTile.oy, waterTile.w, waterTile.h);
 					break;
 				}			
 			}

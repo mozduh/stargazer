@@ -4,62 +4,37 @@ namespace SG
 {
     namespace map 
     {
-        class SGMap
-        {
-            public:
-                SGMap()
-                {
-                    // Load sprites used in demonstration
-                    sprIsom = new olc::Sprite("assets/isometric_demo.png");
-
-                    // Create empty world
-                    pWorld = new int[vMapSize.x * vMapSize.y]{ 0 };
-                }
-            
-            private:
-               // Number of tiles in map
-                olc::vi2d vMapSize = { 14, 10 };
-
-                // Size of single tile graphic
-                olc::vi2d vTileSize = { 40, 20 };
-
-                // Where to place tile (0,0) on screen (in tile size steps)
-                olc::vi2d vOrigin = { 5, 1 };
-
-                // Sprite that holds all imagery
-                olc::Sprite *sprIsom = nullptr;
-
-                // Pointer to create 2D world array
-                int *pWorld = nullptr;
-            
-            public:
-
-        };
 
         class SGTile
         {
             public:
-                SGTile(olc::Sprite *sprIsom)
-                {
-                    spriteRef = sprIsom;
-                }
+                SGTile(olc::vi2d tileSize, int32_t mox, int32_t moy, int32_t mh, int32_t mw );
 
-            private:
-                olc::Sprite *spriteRef = nullptr;
-                olc::vi2d vTileSize = { 40, 20 };
+            public:
+                // tile size
+                olc::vi2d vTileSize;
 
                 // used to draw out from sprite sheet with 4 corners
                 int32_t ox;
                 int32_t oy;
                 int32_t w;
                 int32_t h;
+        };
 
+        class SGMap
+        {
             public:
-                void drawTile()
-                {
-
-                }
+                SGMap(olc::vi2d mapSize);
             
+            public:
+               // Number of tiles in map
+                olc::vi2d vMapSize;
+
+                // Sprite that holds all imagery
+                olc::Sprite *sprIsom;
+
+                // Pointer to create 2D world array
+                int *pWorld;  
         };
     }
 }
