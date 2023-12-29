@@ -19,7 +19,7 @@ client: ${CLIENT_BUILD}/map.o
 server:
 	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/server ${SERVER_SRC}/server.cpp
 
-map.o: 
+$(CLIENT_BUILD)/map.o: 
 	$(CC) $(CFLAGS) -o ${CLIENT_BUILD}/map.o -c ${CLIENT_SRC}/include/map.cpp 
 
 # EXAMPLE TARGETS... WILL BE LEAVING SOON
