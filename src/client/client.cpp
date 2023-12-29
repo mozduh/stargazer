@@ -28,15 +28,13 @@ private:
 	// Tiles TODO
 	SG::world::SGTile **tiles;
 
-	// utils DELETE LATER
-	SG::world::SGTile tile = SG::world::SGTile("grass");
-
 	// Size of single tile graphic
 	olc::vi2d vTileSize = { 40, 20 };
 
 	// Where to place tile (0,0) on screen (in tile size steps)
 	olc::vi2d vOrigin = { 5, 1 };
 
+	olc::vi2d viewOffset = { 0, 0 };
 
 public:
 	bool OnUserCreate() override
@@ -70,10 +68,16 @@ public:
 		{			
 			return olc::vi2d
 			{
-				(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2),
-				(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2)
+				(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
+				(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
 			};
 		};
+
+		// User Input
+		if (GetKey(olc::Key::W).bHeld) viewOffset += { 0, +1 };
+		if (GetKey(olc::Key::S).bHeld) viewOffset += { 0, -1 };
+		if (GetKey(olc::Key::A).bHeld) viewOffset += { +1, 0 };
+		if (GetKey(olc::Key::D).bHeld) viewOffset += { -1, 0 };
 
 		// Render Layer 0 - DEBUG
 		Clear(olc::BLANK);
