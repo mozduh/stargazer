@@ -1,5 +1,6 @@
 #define OLC_PGE_APPLICATION
 #include "../shared/olcPixelGameEngine.h"
+#include "../shared/common.h"
 #include "./include/map.h"
 #include "./include/tile.h"
 #include <typeinfo>
@@ -8,126 +9,133 @@
 // Override base class with your custom functionality
 class StarGazerGame : public olc::PixelGameEngine
 {
-public:
-	StarGazerGame()
-	{
-		sAppName = "Star Gazer";
-	}
-
-private:
-
-	// Layers to be rendered
-	int worldLayer;
-	int gameObjLayer;
-	int playerObjLayer;
-	int interfaceLayer;
-
-	// Map
-	SG::world::SGMap *map;
-
-	// Tiles TODO
-	SG::world::SGTile **tiles;
-
-	// Size of single tile graphic
-	olc::vi2d vTileSize = { 40, 20 };
-
-	// Where to place tile (0,0) on screen (in tile size steps)
-	olc::vi2d vOrigin = { 5, 1 };
-
-	olc::vi2d viewOffset = { 0, 0 };
-
-public:
-	bool OnUserCreate() override
-	{
-		// Create Layers
-		worldLayer = CreateLayer();
-		gameObjLayer = CreateLayer();
-		playerObjLayer = CreateLayer();
-		interfaceLayer = CreateLayer();
-
-		// initalize map
-		// TODO -> this information should come from the server
-		std::string mapName = "origin";
-		map = new SG::world::SGMap(mapName);
-
-		// initalize tiles used in map
-		tiles = new SG::world::SGTile*[map->tileCount];
-		for (int i = 0; i < map->tileCount; i++)
+	public:
+		StarGazerGame()
 		{
-			tiles[i] = new SG::world::SGTile(map->tiles[i]);
+			sAppName = "Star Gazer";
 		}
 
-		return true;
-	}
+	private:
 
-	bool OnUserUpdate(float fElapsedTime) override
-	{
+		// Layers to be rendered
+		int worldLayer;
+		int gameObjLayer;
+		int playerObjLayer;
+		int interfaceLayer;
 
-		// Labmda function to convert "world" coordinate into screen space
-		auto ToScreen = [&](int x, int y)
-		{			
-			return olc::vi2d
-			{
-				(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
-				(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
-			};
-		};
+		// Map
+		SG::world::SGMap *map;
 
-		// User Input
-		if (GetKey(olc::Key::W).bHeld) viewOffset += { 0, +1 };
-		if (GetKey(olc::Key::S).bHeld) viewOffset += { 0, -1 };
-		if (GetKey(olc::Key::A).bHeld) viewOffset += { +1, 0 };
-		if (GetKey(olc::Key::D).bHeld) viewOffset += { -1, 0 };
+		// Tiles TODO
+		SG::world::SGTile **tiles;
 
-		// Render Layer 0 - DEBUG
-		Clear(olc::BLANK);
+		// Size of single tile graphic
+		olc::vi2d vTileSize = { 40, 20 };
 
-		SetPixelMode(olc::Pixel::MASK);
+		// Where to place tile (0,0) on screen (in tile size steps)
+		olc::vi2d vOrigin = { 5, 1 };
 
+		olc::vi2d viewOffset = { 0, 0 };
 
-		// Render Layer 1 - World
-		SetDrawTarget(worldLayer);
-		// WORLD DRAWING CRITICAL SECTION
-		for (int y = 0; y < map->mapSize_y; y++)
+	private:
+		std::unordered_map<uint32_t, sPlayerDescription> mapObjects;
+		uint32_t nPlayerID = 0;
+		sPlayerDescription descPlayer;
+
+		bool bWaitingForConnection = true;
+
+	public:
+		bool OnUserCreate() override
 		{
-			for (int x = 0; x < map->mapSize_x; x++)
+			// Create Layers
+			worldLayer = CreateLayer();
+			gameObjLayer = CreateLayer();
+			playerObjLayer = CreateLayer();
+			interfaceLayer = CreateLayer();
+
+			// initalize map
+			// TODO -> this information should come from the server
+			std::string mapName = "origin";
+			map = new SG::world::SGMap(mapName);
+
+			// initalize tiles used in map
+			tiles = new SG::world::SGTile*[map->tileCount];
+			for (int i = 0; i < map->tileCount; i++)
 			{
-				olc::vi2d vWorld = ToScreen(x, y);
-				SG::world::SGTile tile = *tiles[map->pWorld[(y * (map->mapSize_x)) + x]];
-				olc::vi2d pos = {tile.ox, tile.oy};
-				olc::vi2d size = {tile.w, tile.h};
-				if (tile.h == tile.tileSize_y * 2) 
-				{
-					vWorld.y -= vTileSize.y;
-				}
-				DrawPartialDecal(vWorld, map->decal, pos, size);
+				tiles[i] = new SG::world::SGTile(map->tiles[i]);
 			}
+
+			return true;
 		}
 
-		EnableLayer(worldLayer, true);
+		bool OnUserUpdate(float fElapsedTime) override
+		{
 
-		// Render Layer 2 - GameObjects
-		SetDrawTarget(gameObjLayer);
-		// GAME OBJECT DRAWING CRITICAL SECTION
+			// Labmda function to convert "world" coordinate into screen space
+			auto ToScreen = [&](int x, int y)
+			{			
+				return olc::vi2d
+				{
+					(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
+					(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
+				};
+			};
 
-		EnableLayer(gameObjLayer, true);
+			// User Input
+			if (GetKey(olc::Key::W).bHeld) viewOffset += { 0, +1 };
+			if (GetKey(olc::Key::S).bHeld) viewOffset += { 0, -1 };
+			if (GetKey(olc::Key::A).bHeld) viewOffset += { +1, 0 };
+			if (GetKey(olc::Key::D).bHeld) viewOffset += { -1, 0 };
 
-		// Render Layer 3 - Players
-		SetDrawTarget(playerObjLayer);
-		// PLAYER DRAWING CRITICAL SECTION
+			// Render Layer 0 - DEBUG
+			Clear(olc::BLANK);
 
-		EnableLayer(playerObjLayer, true);
+			SetPixelMode(olc::Pixel::MASK);
 
-		// Render Layer 3 - Interfaces
-		SetDrawTarget(interfaceLayer);
-		// INTERFACE DRAWING CRITICAL SECTION
 
-		EnableLayer(interfaceLayer, true);
+			// Render Layer 1 - World
+			SetDrawTarget(worldLayer);
+			// WORLD DRAWING CRITICAL SECTION
+			for (int y = 0; y < map->mapSize_y; y++)
+			{
+				for (int x = 0; x < map->mapSize_x; x++)
+				{
+					olc::vi2d vWorld = ToScreen(x, y);
+					SG::world::SGTile tile = *tiles[map->pWorld[(y * (map->mapSize_x)) + x]];
+					olc::vi2d pos = {tile.ox, tile.oy};
+					olc::vi2d size = {tile.w, tile.h};
+					if (tile.h == tile.tileSize_y * 2) 
+					{
+						vWorld.y -= vTileSize.y;
+					}
+					DrawPartialDecal(vWorld, map->decal, pos, size);
+				}
+			}
 
-		SetPixelMode(olc::Pixel::NORMAL);
-		SetDrawTarget(nullptr);
-		return true;
-	}
+			EnableLayer(worldLayer, true);
+
+			// Render Layer 2 - GameObjects
+			SetDrawTarget(gameObjLayer);
+			// GAME OBJECT DRAWING CRITICAL SECTION
+
+			EnableLayer(gameObjLayer, true);
+
+			// Render Layer 3 - Players
+			SetDrawTarget(playerObjLayer);
+			// PLAYER DRAWING CRITICAL SECTION
+
+			EnableLayer(playerObjLayer, true);
+
+			// Render Layer 3 - Interfaces
+			SetDrawTarget(interfaceLayer);
+			// INTERFACE DRAWING CRITICAL SECTION
+
+			EnableLayer(interfaceLayer, true);
+
+			SetPixelMode(olc::Pixel::NORMAL);
+			SetDrawTarget(nullptr);
+			return true;
+		}
 };
 
 
