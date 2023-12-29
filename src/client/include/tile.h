@@ -1,4 +1,3 @@
-
 namespace SG 
 {
     namespace world 

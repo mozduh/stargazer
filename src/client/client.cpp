@@ -14,14 +14,17 @@ public:
 
 private:
 
-	// World Layer
+	// Layers to be rendered
 	int worldLayer;
-	// Game Objects Layer
 	int gameObjLayer;
-	// Player Object Layer
 	int playerObjLayer;
-	// Interface Layer
 	int interfaceLayer;
+
+	// Map
+	SG::world::SGMap *map;
+
+	// Tiles
+	
 
 public:
 	bool OnUserCreate() override
@@ -31,6 +34,11 @@ public:
 		gameObjLayer = CreateLayer();
 		playerObjLayer = CreateLayer();
 		interfaceLayer = CreateLayer();
+
+		// initalize map
+		// TODO -> this information should come from the server
+		std::string mapName = "origin";
+		map = new SG::world::SGMap(mapName);
 
 		return true;
 	}

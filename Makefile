@@ -22,7 +22,7 @@ client: map.o tile.o
 server: $(SERVER_TARGETS)
 	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/server ${SERVER_SRC}/server.cpp $(SERVER_TARGETS)
 
-map.o: 
+map.o:
 	$(CC) $(CFLAGS) -o ${CLIENT_BUILD}/map.o -c ${CLIENT_SRC}/include/map.cpp 
 
 tile.o:
