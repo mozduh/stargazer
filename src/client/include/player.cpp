@@ -19,15 +19,77 @@ SG::world::Player::Player()
 
 }
 
-olc::vi2d SG::world::Player::getSpritePos(olc::vf2d vel)
+void SG::world::Player::getSpritePos(olc::vf2d vel)
 {
     // if (GetKey(olc::Key::W).bHeld) mapObjects[nPlayerID].vVel += { -2, -2 };
     // if (GetKey(olc::Key::S).bHeld) mapObjects[nPlayerID].vVel += { +2, +2 };
     // if (GetKey(olc::Key::A).bHeld) mapObjects[nPlayerID].vVel += { -2, +2 };
     // if (GetKey(olc::Key::D).bHeld) mapObjects[nPlayerID].vVel += { +2, -2 };
-    
-    
-    
-    return { };
+    // set currentSpritPos
+    // default will be down
+    // std::cout << "normal vector of vel: " << vel.norm() << std::endl;
+    if (vel.x == 0 && vel.y == 0)
+    {
+        // don't change sprite, player is not moving
+        return;
+    }
 
+    // player is moving, find out the direction and set the current sprite postion properly
+    if (vel.x == 0)
+    {
+        if (vel.y > 0)
+        {
+            // down left
+            currentSpritPos = { 0, 40 };
+            return;
+        }
+        else 
+        {
+            // top right
+            currentSpritPos = { 0, 200 };
+            return;
+        }
+    }
+    if (vel.y == 0)
+    {
+        if (vel.x > 0)
+        {
+            // down right
+            currentSpritPos = { 0, 280 };
+            return;
+        }
+        else
+        {
+            // top left
+            currentSpritPos = { 0, 120 };
+            return;
+        }
+    }
+    if (vel.x > 0 && vel.y > 0)
+    {
+        // down
+        currentSpritPos = { 0, 0 };
+        return;
+    }
+    if (vel.x < 0 && vel.y < 0)
+    {
+        // up
+        currentSpritPos = { 0, 160 };
+        return;
+    }
+    if (vel.x > 0 && vel.y < 0)
+    {
+        // right
+        currentSpritPos = { 0, 240 };
+        return;
+    }
+    if (vel.x < 0 && vel.y > 0)
+    {
+        // left
+        currentSpritPos = { 0, 80 };
+        return;
+    }
+
+
+    return;
 }

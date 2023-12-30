@@ -223,11 +223,11 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				object.second.vPos = vPotentialPosition;
 				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
 
-				olc::vi2d pos = player->getSpritePos(object.second.vVel);
+				player->getSpritePos(object.second.vVel);
 				olc::vi2d size = {40, 40};
-				DrawPartialDecal(vWorld, player->decal, pos, size);
+				DrawPartialDecal(vWorld, player->decal, player->currentSpritPos, size);
 
-				DrawString(4, 4, "player (id)   : " + std::to_string(object.second.vPos.x) + ", " + std::to_string(object.second.vPos.y), olc::WHITE);
+				DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
 				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
 			}
 			// EnableLayer(playerObjLayer, true);

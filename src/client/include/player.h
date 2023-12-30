@@ -22,7 +22,7 @@ namespace SG
                 int32_t h;
 
             public:
-                olc::vi2d getSpritePos(olc::vf2d vel);
+                void getSpritePos(olc::vf2d vel);
         };
     }
 }
