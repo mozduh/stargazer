@@ -15,6 +15,8 @@ namespace SG
                 olc::vi2d currentSpritPos;
                 olc::vi2d size;
 
+                std::chrono::high_resolution_clock::time_point walkAnimeTimer;
+
                 // used to draw out from sprite sheet with 4 corners
                 int32_t ox;
                 int32_t oy;

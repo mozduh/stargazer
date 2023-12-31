@@ -2,6 +2,7 @@
 #include "player.h"
 
 
+
 SG::world::Player::Player() 
 {
     // load sprites for map
@@ -28,10 +29,43 @@ void SG::world::Player::getSpritePos(olc::vf2d vel)
     // set currentSpritPos
     // default will be down
     // std::cout << "normal vector of vel: " << vel.norm() << std::endl;
+    typedef std::chrono::milliseconds ms;
+    typedef std::chrono::seconds s;
+    typedef std::chrono::duration<float> fsec;
+
+    fsec duration;
+    bool walking = false;
+
     if (vel.x == 0 && vel.y == 0)
     {
+        currentSpritPos.x = 0;
+        std::cout << "timer varible " << walkAnimeTimer << std::endl;
+        walkAnimeTimer = std::chrono::high_resolution_clock::now();
         // don't change sprite, player is not moving
         return;
+    }
+    else
+    {
+        // start walking/running sprite
+        duration = std::chrono::duration_cast<ms>(std::chrono::high_resolution_clock::now() - walkAnimeTimer);
+        if (std::chrono::floor<s>(duration) == std::chrono::round<s>(duration)){
+            // below half a second
+            walking = false;
+            currentSpritPos.x = 40;
+        }
+        else 
+        {
+            walking = true;
+            currentSpritPos.x = 80;
+        }
+
+
+        auto floor = std::chrono::floor<s>(duration);
+        auto round = std::chrono::round<s>(duration);
+        std::cout << "round " << round << std::endl;
+        std::cout << "floor  " << floor << std::endl;
+        std::cout << "duration " << duration << std::endl;
+        std::cout << "walking " << walking << std::endl;
     }
 
     // player is moving, find out the direction and set the current sprite postion properly
@@ -40,13 +74,13 @@ void SG::world::Player::getSpritePos(olc::vf2d vel)
         if (vel.y > 0)
         {
             // down left
-            currentSpritPos = { 0, 40 };
+            currentSpritPos.y = 40;
             return;
         }
         else 
         {
             // top right
-            currentSpritPos = { 0, 200 };
+            currentSpritPos.y = 200;
             return;
         }
     }
@@ -55,38 +89,38 @@ void SG::world::Player::getSpritePos(olc::vf2d vel)
         if (vel.x > 0)
         {
             // down right
-            currentSpritPos = { 0, 280 };
+            currentSpritPos.y = 280;
             return;
         }
         else
         {
             // top left
-            currentSpritPos = { 0, 120 };
+            currentSpritPos.y = 120;
             return;
         }
     }
     if (vel.x > 0 && vel.y > 0)
     {
         // down
-        currentSpritPos = { 0, 0 };
+        currentSpritPos.y = 0;
         return;
     }
     if (vel.x < 0 && vel.y < 0)
     {
         // up
-        currentSpritPos = { 0, 160 };
+        currentSpritPos.y = 160;
         return;
     }
     if (vel.x > 0 && vel.y < 0)
     {
         // right
-        currentSpritPos = { 0, 240 };
+        currentSpritPos.y = 240;
         return;
     }
     if (vel.x < 0 && vel.y > 0)
     {
         // left
-        currentSpritPos = { 0, 80 };
+        currentSpritPos.y = 80;
         return;
     }
 
