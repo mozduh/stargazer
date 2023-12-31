@@ -1,6 +1,7 @@
 #include "../shared/common.h"
 #include "./include/map.h"
 #include "./include/tile.h"
+#include "./include/player.h"
 #include <unordered_map>
 // Override base class with your custom functionality
 class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
@@ -34,6 +35,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 		olc::vi2d viewOffset = { 0, 0 };
 
 	private:
+		std::unordered_map<uint32_t, SG::world::Player*> playerObjects;
 		std::unordered_map<uint32_t, sPlayerDescription> mapObjects;
 		uint32_t nPlayerID = 0;
 		sPlayerDescription descPlayer;
@@ -64,6 +66,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// Network Connect
 			if (Connect("127.0.0.1", 60000))
 			{
+				
 				return true;
 			}
 
@@ -104,6 +107,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 					{
 						sPlayerDescription desc;
 						msg >> desc;
+						playerObjects.insert_or_assign(desc.nUniqueID, new SG::world::Player());
 						mapObjects.insert_or_assign(desc.nUniqueID, desc);
 
 						if (desc.nUniqueID == nPlayerID)
@@ -118,6 +122,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 					{
 						uint32_t nRemovalID = 0;
 						msg >> nRemovalID;
+						playerObjects.erase(nRemovalID);
 						mapObjects.erase(nRemovalID);
 						break;
 					}
@@ -216,8 +221,12 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				olc::vf2d vPotentialPosition = object.second.vPos + object.second.vVel * fElapsedTime;
 				object.second.vPos = vPotentialPosition;
 				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
-				DrawCircle(vWorld, 10.0);
-				DrawString(4, 4, "player (id)   : " + std::to_string(object.second.vPos.x) + ", " + std::to_string(object.second.vPos.y), olc::WHITE);
+
+				playerObjects[object.second.nUniqueID]->getSpritePos(object.second.vVel);
+				olc::vi2d size = {40, 40};
+				DrawPartialDecal(vWorld, playerObjects[object.second.nUniqueID]->decal, playerObjects[object.second.nUniqueID]->currentSpritPos, size);
+
+				DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
 				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
 			}
 			// EnableLayer(playerObjLayer, true);

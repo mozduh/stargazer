@@ -9,14 +9,14 @@ SERVER_SRC = ./src/server
 SERVER_BUILD = ./src/server/build
 DEBUG_DIR = ./debug
 
-CLIENT_TARGETS = $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o
+CLIENT_TARGETS = $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o $(CLIENT_BUILD)/player.o
 SERVER_TARGETS = 
 
 EXAMPLE_DIR = ./docs/inspiration
 
 all: client server
 
-client: map.o tile.o
+client: map.o tile.o player.o
 	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/client ${CLIENT_SRC}/client.cpp $(CLIENT_TARGETS)
 
 server: $(SERVER_TARGETS)
@@ -27,6 +27,9 @@ map.o:
 
 tile.o:
 	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/tile.o -c $(CLIENT_SRC)/include/tile.cpp
+
+player.o:
+	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/player.o -c $(CLIENT_SRC)/include/player.cpp
 
 clean:
 	$(RM) $(CLIENT_TARGETS) $(SERVER_TARGETS)
