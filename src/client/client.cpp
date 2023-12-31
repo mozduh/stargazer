@@ -34,10 +34,8 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 
 		olc::vi2d viewOffset = { 0, 0 };
 
-		// player
-		SG::world::Player *player;
-
 	private:
+		std::unordered_map<uint32_t, SG::world::Player*> playerObjects;
 		std::unordered_map<uint32_t, sPlayerDescription> mapObjects;
 		uint32_t nPlayerID = 0;
 		sPlayerDescription descPlayer;
@@ -57,7 +55,6 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// TODO -> this information should come from the server
 			std::string mapName = "origin";
 			map = new SG::world::SGMap(mapName);
-			player = new SG::world::Player();
 
 			// initalize tiles used in map
 			tiles = new SG::world::SGTile*[map->tileCount];
@@ -110,6 +107,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 					{
 						sPlayerDescription desc;
 						msg >> desc;
+						playerObjects.insert_or_assign(desc.nUniqueID, new SG::world::Player());
 						mapObjects.insert_or_assign(desc.nUniqueID, desc);
 
 						if (desc.nUniqueID == nPlayerID)
@@ -124,6 +122,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 					{
 						uint32_t nRemovalID = 0;
 						msg >> nRemovalID;
+						playerObjects.erase(nRemovalID);
 						mapObjects.erase(nRemovalID);
 						break;
 					}
@@ -223,9 +222,9 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				object.second.vPos = vPotentialPosition;
 				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
 
-				player->getSpritePos(object.second.vVel);
+				playerObjects[object.second.nUniqueID]->getSpritePos(object.second.vVel);
 				olc::vi2d size = {40, 40};
-				DrawPartialDecal(vWorld, player->decal, player->currentSpritPos, size);
+				DrawPartialDecal(vWorld, playerObjects[object.second.nUniqueID]->decal, playerObjects[object.second.nUniqueID]->currentSpritPos, size);
 
 				DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
 				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
