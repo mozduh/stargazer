@@ -23,6 +23,8 @@ run the following commands to install the dependencies if you use `arch` based d
 
 `sudo pacman -S gcc glibc libpng mesa asio`
 
+Development on Windows is forbidden. The target platform to run this game is linux.
+
 # Build
 run `make` in the root directory of the repo.
 
