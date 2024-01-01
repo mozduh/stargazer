@@ -3,31 +3,50 @@
 # Overview
 Star Gazer is a 2D isometric view MMORPG game created with c++ and olcPixelGameEngine.
 
-# Build
-Make sure you have the following installed onto your development machine:
+# Install Dependencies
+The following dependencies are used to compile and run the Server and Client.
 - gcc
 - glibc
 - libpng
 - mesa
 - asio
 
+run the following commands to install the dependencies if you use `ubuntu` based distros:
+
+`sudo apt update`
+
+`sudo apt install build-essential libglu1-mesa-dev libpng-dev asio`
+
+run the following commands to install the dependencies if you use `arch` based distros:
+
+`sudo pacman -Sy`
+
+`sudo pacman -S gcc glibc libpng mesa asio`
+
+# Build
 run `make` in the root directory of the repo.
 
+run `make client` to only compile the client binaries.
+
+run `make server` to only compile the server binaries.
+
 # Run
-The result of running make should output two binaries in the debug folder:
+The result of running build should output two binaries in the debug folder:
 - server
 - client
 
-cd to the debug directory. Be sure to run the server first then the client.
+cd to the debug directory. Run the Server binary first. Then open up another terminal and run the client binary. Make sure to run these programs inside the debug directory or the sprites won't load.
 
 # Examples
-Check out the Inspiration directory README file for information about the inspiration of this project and instructions to run example programs.
+Check out the Inspiration directory README file located in `./docs/inspiration` for information about the inspiration of this project and instructions to run example programs.
 
 # Contribution
 To Contribute:
-- check out the `todo` directory
-- look for a todo file that you want to solve
-- create a branch
-- write code that solves the todo ticket
-- once complete, remove the todo file from the directory, commit, and push to remote
-- create a pull request to be reviewed
+- check the issues in this repo
+- find an issue you want to solve
+- create a branch and link it to that issue
+- write code that solves the issue
+- once complete, create a pull request for review
+
+# Discussion
+Discussions will be had periodically to discuss design, implementation, and lore. Use the Discussion tab in Github to be apart of the discussion.
