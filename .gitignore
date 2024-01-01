@@ -1,8 +1,6 @@
 debug/client
 debug/server
-debug/isoEXClient
-debug/mmoEXClient
 *.o
-inspiration/mmoEXClient
-inspiration/isoEXClient
-inspiration/server
+docs/inspiration/mmoEXClient
+docs/inspiration/isoEXClient
+docs/inspiration/server
