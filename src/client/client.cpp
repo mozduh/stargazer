@@ -4,6 +4,7 @@
 #include "./include/player.h"
 #include "./include/network.h"
 #include "./include/interface.h"
+#include "./include/controller.h"
 #include <unordered_map>
 // Override base class with your custom functionality
 class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
@@ -39,6 +40,27 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 	private:
 		SG::net::NetworkController nc;
 		SG::ui::InterfaceController ic;
+		SG::ui::GamePadController gpc;
+
+	public:
+		olc::vi2d ToScreen(int x, int y)
+		{			
+			return olc::vi2d
+			{
+				(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
+				(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
+			};
+		};
+
+		olc::vf2d ToScreenFloat (float x, float y)
+		{			
+			return olc::vf2d
+			{
+				(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
+				(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
+			};
+		};
+
 
 	public:
 		bool OnUserCreate() override
@@ -69,7 +91,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 
 		bool OnUserUpdate(float fElapsedTime) override
 		{
-			// Process Input From server
+			// PROCESS SERVER INPUT - START
 			bool waitingForConn = nc.ProcessInput();
 			if (waitingForConn)
 			{
@@ -79,35 +101,12 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				EnableLayer(interfaceLayer, true);
 				return true;
 			} 
-			        
-			
-			// Labmda function to convert "world" coordinate into screen space
-			auto ToScreen = [&](int x, int y)
-			{			
-				return olc::vi2d
-				{
-					(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
-					(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
-				};
-			};
+			// PROCESS SERVER INPUT - END
 
-			auto ToScreenFloat = [&](float x, float y)
-			{			
-				return olc::vf2d
-				{
-					(vOrigin.x * vTileSize.x) + (x - y) * (vTileSize.x / 2) + viewOffset.x,
-					(vOrigin.y * vTileSize.y) + (x + y) * (vTileSize.y / 2) + viewOffset.y
-				};
-			};
-
-			// movment controls
-			nc.mapObjects[nc.nPlayerID].vVel = { 0.0f, 0.0f };
-			if (GetKey(olc::Key::W).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { -2, -2 };
-			if (GetKey(olc::Key::S).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { +2, +2 };
-			if (GetKey(olc::Key::A).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { -2, +2 };
-			if (GetKey(olc::Key::D).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { +2, -2 };
-			// interface controls
-			if (GetKey(olc::Key::ESCAPE).bPressed) ic.showEscapeMenu = !ic.showEscapeMenu;
+			// PROCESS CONTROL INPUTS - START
+			nc.mapObjects[nc.nPlayerID].vVel = gpc.processMovementInputs(this);
+			gpc.processInterfaceInputs(this, &ic);
+			// PROCESS CONTROL INPUTS - END
 
 			// Render Layer 1 - Interface - Start
 			SetDrawTarget(interfaceLayer);
@@ -169,8 +168,9 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// WORLD DRAWING CRITIAL SECTION END //
 			EnableLayer(worldLayer, true);
 
-			// Proccess output for server
+			// PROCESS SERVER OUTPUT - START
 			nc.ProcessOutput();
+			// PROCESS SERVER OUTPUT - END
 
 			return true;
 		}
