@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+CFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20 -g
 RM = rm
 
 SHARED_DIR =./shared
