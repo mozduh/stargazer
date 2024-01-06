@@ -2,6 +2,7 @@
 #include "./include/map.h"
 #include "./include/tile.h"
 #include "./include/player.h"
+#include "./include/network.h"
 #include <unordered_map>
 // Override base class with your custom functionality
 class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
@@ -36,8 +37,11 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 		std::unordered_map<uint32_t, sPlayerDescription> mapObjects;
 		uint32_t nPlayerID = 0;
 		sPlayerDescription descPlayer;
-
 		bool bWaitingForConnection = true;
+
+	private:
+		SG::net::NetworkController nc;
+
 
 	public:
 		bool OnUserCreate() override
@@ -182,6 +186,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 
 			// Render Layer 0 - DEBUG
 			// Clear(olc::BLANK);
+			// this is done on create
 
 			// Render Layer 1 - Interfaces
 			SetDrawTarget(interfaceLayer);
