@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20
+CFLAGS = -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++20 -g
 RM = rm
 
 SHARED_DIR =./shared
@@ -9,14 +9,14 @@ SERVER_SRC = ./src/server
 SERVER_BUILD = ./src/server/build
 DEBUG_DIR = ./debug
 
-CLIENT_TARGETS = $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o $(CLIENT_BUILD)/player.o
+CLIENT_TARGETS = $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o $(CLIENT_BUILD)/player.o $(CLIENT_BUILD)/network.o
 SERVER_TARGETS = 
 
 EXAMPLE_DIR = ./docs/inspiration
 
 all: client server
 
-client: map.o tile.o player.o
+client: map.o tile.o player.o network.o
 	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/client ${CLIENT_SRC}/client.cpp $(CLIENT_TARGETS)
 
 server: $(SERVER_TARGETS)
@@ -30,6 +30,9 @@ tile.o:
 
 player.o:
 	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/player.o -c $(CLIENT_SRC)/include/player.cpp
+
+network.o:
+	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/network.o -c $(CLIENT_SRC)/include/network.cpp
 
 clean:
 	$(RM) $(CLIENT_TARGETS) $(SERVER_TARGETS)

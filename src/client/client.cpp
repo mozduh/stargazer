@@ -2,6 +2,7 @@
 #include "./include/map.h"
 #include "./include/tile.h"
 #include "./include/player.h"
+#include "./include/network.h"
 #include <unordered_map>
 // Override base class with your custom functionality
 class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
@@ -32,12 +33,11 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 		olc::vi2d viewOffset = { 0, 0 };
 
 	private:
-		std::unordered_map<uint32_t, SG::world::Player*> playerObjects;
-		std::unordered_map<uint32_t, sPlayerDescription> mapObjects;
-		uint32_t nPlayerID = 0;
-		sPlayerDescription descPlayer;
+		std::unordered_map<uint32_t, SG::world::Player> playerObjects;
 
-		bool bWaitingForConnection = true;
+	private:
+		SG::net::NetworkController nc;
+
 
 	public:
 		bool OnUserCreate() override
@@ -62,91 +62,23 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				tiles[i] = new SG::world::SGTile(map->tiles[i]);
 			}
 
-			// Network Connect
-			if (Connect("127.0.0.1", 60000))
-			{
-				
-				return true;
-			}
-
-			return false;
+			bool netConnectStatus = nc.ConnectToServer();
+			return netConnectStatus;
 		}
 
 		bool OnUserUpdate(float fElapsedTime) override
 		{
-			// Check for incoming network messages
-			if (IsConnected())
-			{
-				while (!Incoming().empty())
-				{
-					auto msg = Incoming().pop_front().msg;
-
-					switch (msg.header.id)
-					{
-					case(GameMsg::Client_Accepted):
-					{
-						std::cout << "Server accepted client - you're in!\n";
-						olc::net::message<GameMsg> msg;
-						msg.header.id = GameMsg::Client_RegisterWithServer;
-						descPlayer.vPos = { 3, 3 };
-						msg << descPlayer;
-						Send(msg);
-						break;
-					}
-
-					case(GameMsg::Client_AssignID):
-					{
-						// Server is assigning us OUR id
-						msg >> nPlayerID;
-						std::cout << "Assigned Client ID = " << nPlayerID << "\n";
-						break;
-					}
-
-					case(GameMsg::Game_AddPlayer):
-					{
-						sPlayerDescription desc;
-						msg >> desc;
-						playerObjects.insert_or_assign(desc.nUniqueID, new SG::world::Player());
-						mapObjects.insert_or_assign(desc.nUniqueID, desc);
-
-						if (desc.nUniqueID == nPlayerID)
-						{
-							// Now we exist in game world
-							bWaitingForConnection = false;
-						}
-						break;
-					}
-
-					case(GameMsg::Game_RemovePlayer):
-					{
-						uint32_t nRemovalID = 0;
-						msg >> nRemovalID;
-						playerObjects.erase(nRemovalID);
-						mapObjects.erase(nRemovalID);
-						break;
-					}
-
-					case(GameMsg::Game_UpdatePlayer):
-					{
-						sPlayerDescription desc;
-						msg >> desc;
-						mapObjects.insert_or_assign(desc.nUniqueID, desc);
-						break;
-					}
-
-					}
-				}
-			}
-			if (bWaitingForConnection)
+			// Process Input From server
+			bool netInput = nc.ProcessInput();
+			if (netInput)
 			{
 				SetDrawTarget(interfaceLayer);
 				Clear(olc::DARK_BLUE);
 				DrawString({ 10,10 }, "Waiting To Connect...", olc::WHITE);
 				EnableLayer(interfaceLayer, true);
 				return true;
-			}
-
-
+			} 
+			        
 			
 			// Labmda function to convert "world" coordinate into screen space
 			auto ToScreen = [&](int x, int y)
@@ -173,15 +105,16 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// if (GetKey(olc::Key::A).bHeld) viewOffset += { +1, 0 };
 			// if (GetKey(olc::Key::D).bHeld) viewOffset += { -1, 0 };
 
-			mapObjects[nPlayerID].vVel = { 0.0f, 0.0f };
-			if (GetKey(olc::Key::W).bHeld) mapObjects[nPlayerID].vVel += { -2, -2 };
-			if (GetKey(olc::Key::S).bHeld) mapObjects[nPlayerID].vVel += { +2, +2 };
-			if (GetKey(olc::Key::A).bHeld) mapObjects[nPlayerID].vVel += { -2, +2 };
-			if (GetKey(olc::Key::D).bHeld) mapObjects[nPlayerID].vVel += { +2, -2 };
+			nc.mapObjects[nc.nPlayerID].vVel = { 0.0f, 0.0f };
+			if (GetKey(olc::Key::W).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { -2, -2 };
+			if (GetKey(olc::Key::S).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { +2, +2 };
+			if (GetKey(olc::Key::A).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { -2, +2 };
+			if (GetKey(olc::Key::D).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { +2, -2 };
 
 
 			// Render Layer 0 - DEBUG
 			// Clear(olc::BLANK);
+			// this is done on create
 
 			// Render Layer 1 - Interfaces
 			SetDrawTarget(interfaceLayer);
@@ -189,7 +122,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// INTERFACE DRAWING CRITICAL SECTION START //
 			// DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
 			// DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
-			DrawString(4, 24, "player (id)   : " + std::to_string(mapObjects[nPlayerID].vPos.x) + ", " + std::to_string(mapObjects[nPlayerID].vPos.y), olc::WHITE);
+			DrawString(4, 24, "player (id)   : " + std::to_string(nc.mapObjects[nc.nPlayerID].vPos.x) + ", " + std::to_string(nc.mapObjects[nc.nPlayerID].vPos.y), olc::WHITE);
 			// INTERFACE DRAWING CRITICAL SECTION END //
 			EnableLayer(interfaceLayer, true);
 
@@ -198,16 +131,16 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			SetDrawTarget(playerObjLayer);
 			Clear(olc::BLANK);
 			// PLAYER DRAWING CRITICAL SECTION START //
-			for (auto& object : mapObjects)
+			for (auto& object : nc.mapObjects)
 			{
 				// Where will object be worst case?
 				olc::vf2d vPotentialPosition = object.second.vPos + object.second.vVel * fElapsedTime;
 				object.second.vPos = vPotentialPosition;
 				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
 
-				playerObjects[object.second.nUniqueID]->getSpritePos(object.second.vVel);
+				playerObjects[object.second.nUniqueID].getSpritePos(object.second.vVel);
 				olc::vi2d size = {40, 40};
-				DrawPartialDecal(vWorld, playerObjects[object.second.nUniqueID]->decal, playerObjects[object.second.nUniqueID]->currentSpritPos, size);
+				DrawPartialDecal(vWorld, playerObjects[object.second.nUniqueID].decal, playerObjects[object.second.nUniqueID].currentSpritPos, size);
 				DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
 				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
 			}
@@ -245,17 +178,8 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			// WORLD DRAWING CRITIAL SECTION END //
 			EnableLayer(worldLayer, true);
 
-
-			// set back to default layer
-			// SetDrawTarget(nullptr);
-
-			// NETWORK CRITICAL SECTION START //
-			// Send player description
-			olc::net::message<GameMsg> msg;
-			msg.header.id = GameMsg::Game_UpdatePlayer;
-			msg << mapObjects[nPlayerID];
-			Send(msg);
-			// NETWORK CRITICAL SECTION END //
+			// Proccess output for server
+			nc.ProcessOutput();
 
 			return true;
 		}
