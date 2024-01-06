@@ -3,6 +3,7 @@
 #include "./include/tile.h"
 #include "./include/player.h"
 #include "./include/network.h"
+#include "./include/interface.h"
 #include <unordered_map>
 // Override base class with your custom functionality
 class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
@@ -37,6 +38,7 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 
 	private:
 		SG::net::NetworkController nc;
+		SG::ui::InterfaceController ic;
 
 
 	public:

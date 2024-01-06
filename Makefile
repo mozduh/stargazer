@@ -9,14 +9,14 @@ SERVER_SRC = ./src/server
 SERVER_BUILD = ./src/server/build
 DEBUG_DIR = ./debug
 
-CLIENT_TARGETS = $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o $(CLIENT_BUILD)/player.o $(CLIENT_BUILD)/network.o
+CLIENT_TARGETS = $(CLIENT_BUILD)/map.o $(CLIENT_BUILD)/tile.o $(CLIENT_BUILD)/player.o $(CLIENT_BUILD)/network.o $(CLIENT_BUILD)/interface.o
 SERVER_TARGETS = 
 
 EXAMPLE_DIR = ./docs/inspiration
 
 all: client server
 
-client: map.o tile.o player.o network.o
+client: map.o tile.o player.o network.o interface.o
 	$(CC) $(CFLAGS) -o ${DEBUG_DIR}/client ${CLIENT_SRC}/client.cpp $(CLIENT_TARGETS)
 
 server: $(SERVER_TARGETS)
@@ -33,6 +33,10 @@ player.o:
 
 network.o:
 	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/network.o -c $(CLIENT_SRC)/include/network.cpp
+
+interface.o:
+	$(CC) $(CFLAGS) -o $(CLIENT_BUILD)/interface.o -c $(CLIENT_SRC)/include/interface.cpp
+
 
 clean:
 	$(RM) $(CLIENT_TARGETS) $(SERVER_TARGETS)
