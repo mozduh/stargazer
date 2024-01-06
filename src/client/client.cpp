@@ -7,7 +7,7 @@
 #include "./include/controller.h"
 #include <unordered_map>
 // Override base class with your custom functionality
-class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<GameMsg>
+class StarGazerGame : public olc::PixelGameEngine
 {
 	public:
 		StarGazerGame()
