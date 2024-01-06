@@ -40,7 +40,6 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 		SG::net::NetworkController nc;
 		SG::ui::InterfaceController ic;
 
-
 	public:
 		bool OnUserCreate() override
 		{
@@ -71,8 +70,8 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 		bool OnUserUpdate(float fElapsedTime) override
 		{
 			// Process Input From server
-			bool netInput = nc.ProcessInput();
-			if (netInput)
+			bool waitingForConn = nc.ProcessInput();
+			if (waitingForConn)
 			{
 				SetDrawTarget(interfaceLayer);
 				Clear(olc::DARK_BLUE);
@@ -101,35 +100,25 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 				};
 			};
 
-			// User Input
-			// if (GetKey(olc::Key::W).bHeld) viewOffset += { 0, +1 };
-			// if (GetKey(olc::Key::S).bHeld) viewOffset += { 0, -1 };
-			// if (GetKey(olc::Key::A).bHeld) viewOffset += { +1, 0 };
-			// if (GetKey(olc::Key::D).bHeld) viewOffset += { -1, 0 };
-
+			// movment controls
 			nc.mapObjects[nc.nPlayerID].vVel = { 0.0f, 0.0f };
 			if (GetKey(olc::Key::W).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { -2, -2 };
 			if (GetKey(olc::Key::S).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { +2, +2 };
 			if (GetKey(olc::Key::A).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { -2, +2 };
 			if (GetKey(olc::Key::D).bHeld) nc.mapObjects[nc.nPlayerID].vVel += { +2, -2 };
+			// interface controls
+			if (GetKey(olc::Key::ESCAPE).bPressed) ic.showEscapeMenu = !ic.showEscapeMenu;
 
-
-			// Render Layer 0 - DEBUG
-			// Clear(olc::BLANK);
-			// this is done on create
-
-			// Render Layer 1 - Interfaces
+			// Render Layer 1 - Interface - Start
 			SetDrawTarget(interfaceLayer);
-			Clear(olc::BLANK);
 			// INTERFACE DRAWING CRITICAL SECTION START //
-			// DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
-			// DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
-			DrawString(4, 24, "player (id)   : " + std::to_string(nc.mapObjects[nc.nPlayerID].vPos.x) + ", " + std::to_string(nc.mapObjects[nc.nPlayerID].vPos.y), olc::WHITE);
+			Clear(olc::BLANK);
+			ic.drawInterface(this);
 			// INTERFACE DRAWING CRITICAL SECTION END //
 			EnableLayer(interfaceLayer, true);
+			// Render Layer 1 - Interface - End
 
-
-			// Render Layer 2 - Players
+			// Render Layer 2 - Players  Start
 			SetDrawTarget(playerObjLayer);
 			Clear(olc::BLANK);
 			// PLAYER DRAWING CRITICAL SECTION START //

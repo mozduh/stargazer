@@ -9,7 +9,11 @@ namespace SG
             
             public:
                 bool showInterface;
+                bool showEscapeMenu;
 
+            public:
+                void drawInterface(olc::PixelGameEngine *ge);
+                void drawEscapeMenu(olc::PixelGameEngine *ge);
         };
     }
 }
