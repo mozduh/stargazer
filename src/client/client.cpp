@@ -20,18 +20,15 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 		int playerObjLayer;
 		int interfaceLayer;
 
-		// Map
+		// current Map
 		SG::world::SGMap *map;
 
-		// Tiles TODO
+		// Tiles TODO change to vector or array
 		SG::world::SGTile **tiles;
 
-		// Size of single tile graphic
+		// variables for world rendering
 		olc::vi2d vTileSize = { 40, 20 };
-
-		// Where to place tile (0,0) on screen (in tile size steps)
 		olc::vi2d vOrigin = { 5, 1 };
-
 		olc::vi2d viewOffset = { 0, 0 };
 
 	private:
@@ -45,11 +42,13 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 	public:
 		bool OnUserCreate() override
 		{
-			// Create Layers
-			worldLayer = CreateLayer();
-			gameObjLayer = CreateLayer();
-			playerObjLayer = CreateLayer();
+			// Create Drawing Layers
 			interfaceLayer = CreateLayer();
+			playerObjLayer = CreateLayer();
+			gameObjLayer = CreateLayer();
+			worldLayer = CreateLayer();
+			SetDrawTarget(nullptr); // set to debug layer
+			Clear(olc::BLANK);
 
 			// initalize map
 			// TODO -> this information should come from the server
@@ -140,8 +139,10 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 			}
 			if (bWaitingForConnection)
 			{
+				SetDrawTarget(interfaceLayer);
 				Clear(olc::DARK_BLUE);
 				DrawString({ 10,10 }, "Waiting To Connect...", olc::WHITE);
+				EnableLayer(interfaceLayer, true);
 				return true;
 			}
 
@@ -180,11 +181,52 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 
 
 			// Render Layer 0 - DEBUG
-			Clear(olc::BLANK);
+			// Clear(olc::BLANK);
 
-			// Render Layer 1 - World
+			// Render Layer 1 - Interfaces
+			SetDrawTarget(interfaceLayer);
+			Clear(olc::BLANK);
+			// INTERFACE DRAWING CRITICAL SECTION START //
+			// DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
+			// DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
+			DrawString(4, 24, "player (id)   : " + std::to_string(mapObjects[nPlayerID].vPos.x) + ", " + std::to_string(mapObjects[nPlayerID].vPos.y), olc::WHITE);
+			// INTERFACE DRAWING CRITICAL SECTION END //
+			EnableLayer(interfaceLayer, true);
+
+
+			// Render Layer 2 - Players
+			SetDrawTarget(playerObjLayer);
+			Clear(olc::BLANK);
+			// PLAYER DRAWING CRITICAL SECTION START //
+			for (auto& object : mapObjects)
+			{
+				// Where will object be worst case?
+				olc::vf2d vPotentialPosition = object.second.vPos + object.second.vVel * fElapsedTime;
+				object.second.vPos = vPotentialPosition;
+				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
+
+				playerObjects[object.second.nUniqueID]->getSpritePos(object.second.vVel);
+				olc::vi2d size = {40, 40};
+				DrawPartialDecal(vWorld, playerObjects[object.second.nUniqueID]->decal, playerObjects[object.second.nUniqueID]->currentSpritPos, size);
+				DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
+				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
+			}
+			// PLAYER DRAWING CRITICAL SECTION END //
+			EnableLayer(playerObjLayer, true);
+
+
+			// Render Layer 3 - GameObjects
+			SetDrawTarget(gameObjLayer);
+			Clear(olc::BLANK);
+			// GAME OBJECT DRAWING CRITICAL SECTION START //
+
+			// GAME OBJECT DRAWING CRITICAL SECTION END //
+			EnableLayer(gameObjLayer, true);
+
+			// Render Layer 4 - World
 			SetDrawTarget(worldLayer);
-			// WORLD DRAWING CRITICAL SECTION
+			Clear(olc::BLANK);
+			// WORLD DRAWING CRITICAL SECTION START //
 			for (int y = 0; y < map->mapSize_y; y++)
 			{
 				for (int x = 0; x < map->mapSize_x; x++)
@@ -200,53 +242,21 @@ class StarGazerGame : public olc::PixelGameEngine, olc::net::client_interface<Ga
 					DrawPartialDecal(vWorld, map->decal, pos, size);
 				}
 			}
-
+			// WORLD DRAWING CRITIAL SECTION END //
 			EnableLayer(worldLayer, true);
-			SetDrawTarget(nullptr);
 
 
-			// // Render Layer 2 - GameObjects
-			// SetDrawTarget(gameObjLayer);
-			// // GAME OBJECT DRAWING CRITICAL SECTION
-			// Clear(olc::BLANK);
-			// EnableLayer(gameObjLayer, true);
+			// set back to default layer
+			// SetDrawTarget(nullptr);
 
-			// // Render Layer 3 - Players
-			// SetDrawTarget(playerObjLayer);
-			// PLAYER DRAWING CRITICAL SECTION
-			// Update objects locally
-			for (auto& object : mapObjects)
-			{
-				// Where will object be worst case?
-				olc::vf2d vPotentialPosition = object.second.vPos + object.second.vVel * fElapsedTime;
-				object.second.vPos = vPotentialPosition;
-				olc::vi2d vWorld = ToScreenFloat(object.second.vPos.x, object.second.vPos.y);
-
-				playerObjects[object.second.nUniqueID]->getSpritePos(object.second.vVel);
-				olc::vi2d size = {40, 40};
-				DrawPartialDecal(vWorld, playerObjects[object.second.nUniqueID]->decal, playerObjects[object.second.nUniqueID]->currentSpritPos, size);
-
-				DrawString(4, 4, "player (vel)   : " + std::to_string(object.second.vVel.x) + ", " + std::to_string(object.second.vVel.y), olc::WHITE);
-				DrawString(4, 14, "player(world)   : " + std::to_string(vWorld.x) + ", " + std::to_string(vWorld.y), olc::WHITE);
-			}
-			// EnableLayer(playerObjLayer, true);
-
-			// // Render Layer 3 - Interfaces
-			// SetDrawTarget(interfaceLayer);
-			// // INTERFACE DRAWING CRITICAL SECTION
-
-			// EnableLayer(interfaceLayer, true);
-			
-
-			SetDrawTarget(nullptr);
-
+			// NETWORK CRITICAL SECTION START //
 			// Send player description
 			olc::net::message<GameMsg> msg;
 			msg.header.id = GameMsg::Game_UpdatePlayer;
 			msg << mapObjects[nPlayerID];
 			Send(msg);
+			// NETWORK CRITICAL SECTION END //
 
-			DrawString(4, 24, "player (id)   : " + std::to_string(mapObjects[nPlayerID].vPos.x) + ", " + std::to_string(mapObjects[nPlayerID].vPos.y), olc::WHITE);
 			return true;
 		}
 };
