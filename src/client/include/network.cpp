@@ -55,11 +55,8 @@ bool SG::net::NetworkController::ProcessInput()
                 msg >> desc;
                 // playerObjects.insert_or_assign(desc.nUniqueID, new SG::world::Player());
                 mapObjects.insert_or_assign(desc.nUniqueID, desc);
-                std::cout << "adding player" << std::endl;
                 if (desc.nUniqueID == nPlayerID)
                 {
-                    std::cout << "setting it" << std::endl;
-
                     // Now we exist in game world
                     bWaitingForConnection = false;
                 }
