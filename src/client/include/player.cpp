@@ -13,11 +13,6 @@ SG::world::Player::Player()
     currentSpritPos = {0, 0};
     size = {40, 40};
 
-    ox = 0;
-    oy = 0;
-    w = 40;
-    h = 40;
-
 }
 
 void SG::world::Player::getSpritePos(olc::vf2d vel)
@@ -39,7 +34,6 @@ void SG::world::Player::getSpritePos(olc::vf2d vel)
     if (vel.x == 0 && vel.y == 0)
     {
         currentSpritPos.x = 0;
-        std::cout << "timer varible " << walkAnimeTimer << std::endl;
         walkAnimeTimer = std::chrono::high_resolution_clock::now();
         // don't change sprite, player is not moving
         return;
@@ -62,10 +56,6 @@ void SG::world::Player::getSpritePos(olc::vf2d vel)
 
         auto floor = std::chrono::floor<s>(duration);
         auto round = std::chrono::round<s>(duration);
-        std::cout << "round " << round << std::endl;
-        std::cout << "floor  " << floor << std::endl;
-        std::cout << "duration " << duration << std::endl;
-        std::cout << "walking " << walking << std::endl;
     }
 
     // player is moving, find out the direction and set the current sprite postion properly
