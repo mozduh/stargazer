@@ -7,3 +7,13 @@ SG::net::NetworkController::NetworkController()
 {
 
 };
+
+bool SG::net::NetworkController::ProcessInput()
+{
+    return false;
+};
+                
+bool SG::net::NetworkController::ProcessOutput()
+{
+    return false;
+};
